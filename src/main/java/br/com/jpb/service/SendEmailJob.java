@@ -3,6 +3,7 @@ package br.com.jpb.service;
 import br.com.jpb.model.entity.Email;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 
 import javax.inject.Inject;
@@ -16,11 +17,17 @@ public class SendEmailJob {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(SendEmailJob.class);
 
+	@Value("${app.sendEmail}")
+	private String APP_SEND_EMAIL;
+
 	@Inject
 	private transient EmailService emailService;
 
 	@Scheduled(fixedDelay = 20_000)
 	public void sendEmails() {
+		if (!isAppSendEmail()) {
+			return;
+		}
 		final List<Email> toSend = emailService.findEmailsToSend();
 		LOGGER.info("Iniciando job para envio de emails. Quantidade de emails a enviar: " + toSend
 				.size());
@@ -34,6 +41,10 @@ public class SendEmailJob {
 			}
 		}
 		LOGGER.info("Finalizando job para envio de emails.");
+	}
+
+	private boolean isAppSendEmail() {
+		return "true".equals(APP_SEND_EMAIL);
 	}
 
 }

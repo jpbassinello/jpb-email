@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>br.com.jpb</groupId>
 	<artifactId>jpb-email</artifactId>
-	<version>1.0.0</version>
+	<version>1.0.1</version>
 	<name>Email JPB</name>
 	<description>Send email from any java application</description>
 

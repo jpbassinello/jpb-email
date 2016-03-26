@@ -57,7 +57,7 @@ public class EmailService {
 
 	public List<Email> findEmailsToSend() {
 		final StringBuilder query = new StringBuilder();
-		query.append("select e from email ");
+		query.append("select e from Email e ");
 		query.append("where e.sent = false and e.tries < :max");
 		return genericDao.getEm().createQuery(query.toString(), Email.class).setParameter("max",
 				MAX_TRIES).getResultList();

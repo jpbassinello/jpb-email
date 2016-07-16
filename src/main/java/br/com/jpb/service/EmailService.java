@@ -2,10 +2,11 @@ package br.com.jpb.service;
 
 import br.com.jpb.dao.GenericDao;
 import br.com.jpb.model.entity.Email;
+import com.google.common.base.Splitter;
+import com.google.common.collect.Sets;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.env.Environment;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -38,17 +39,14 @@ public class EmailService {
 	@Value("${name.from}")
 	private String NAME_FROM;
 
-	@Value("${app.env}")
-	private String APP_ENV;
+	@Value("${allowed.emails}")
+	private String ALLOWED_EMAILS;
 
 	@Inject
 	private transient JavaMailSenderImpl mailSender;
 
 	@Inject
 	private transient GenericDao genericDao;
-
-	@Inject
-	private transient Environment environment;
 
 	@Transactional
 	public void saveEmailAndSend(Email email) {
@@ -59,27 +57,27 @@ public class EmailService {
 		final StringBuilder query = new StringBuilder();
 		query.append("select e from Email e ");
 		query.append("where e.sent = false and e.tries < :max");
-		return genericDao.getEm().createQuery(query.toString(), Email.class).setParameter("max",
-				MAX_TRIES).getResultList();
+		return genericDao.getEm().createQuery(query.toString(), Email.class).setParameter("max", MAX_TRIES)
+				.getResultList();
 	}
 
 	@Transactional
-	void updateTries(Email email) {
+	public void updateTries(Email email) {
 		email.addTry();
 		genericDao.merge(email);
 	}
 
 	@Transactional
-	void send(Email email) throws MessagingException, IOException {
+	public void send(Email email) throws MessagingException, IOException {
 		LOGGER.info("Sending email {} to {}", email.getSubject(), email.getEmailTo());
-		if (!isProduction() && email.getEmailTo().endsWith("@tecsinapse.com.br")) {
+		if (!isAllowed(email.getEmailTo())) {
 			markSent(email);
 			return;
 		}
 		MimeMessage message = mailSender.createMimeMessage();
 		message.setFrom(new InternetAddress(EMAIL_FROM, NAME_FROM));
-		message.addRecipients(Message.RecipientType.TO, new Address[]{new InternetAddress(email
-				.getEmailTo(), email.getNameTo())});
+		message.addRecipients(Message.RecipientType.TO,
+				new Address[]{new InternetAddress(email.getEmailTo(), email.getNameTo())});
 		message.setSubject(email.getSubject());
 
 		Multipart multipart = new MimeMultipart();
@@ -99,7 +97,11 @@ public class EmailService {
 		genericDao.merge(email);
 	}
 
-	private boolean isProduction() {
-		return "Production".equals(APP_ENV);
+	private boolean isAllowed(String emailTo) {
+		if ("*".equals(ALLOWED_EMAILS)) {
+			return true;
+		}
+		return Sets.newHashSet(Splitter.on(",").split(ALLOWED_EMAILS)).contains(emailTo);
 	}
+
 }

@@ -29,14 +29,13 @@ public class SendEmailJob {
 			return;
 		}
 		final List<Email> toSend = emailService.findEmailsToSend();
-		LOGGER.info("Iniciando job para envio de emails. Quantidade de emails a enviar: " + toSend
-				.size());
+		LOGGER.info("Iniciando job para envio de emails. Quantidade de emails a enviar: " + toSend.size());
 		for (Email email : toSend) {
 			try {
 				emailService.send(email);
 			} catch (Exception e) {
-				LOGGER.warn("Erro no job para envio de emails. Assunto do email: {}. " +
-						"Destinatário:" + " {}", email.getSubject(), email.getEmailTo());
+				LOGGER.warn("Erro no job para envio de emails. Assunto do email: {}. " + "Destinatário:" + " {}",
+						email.getSubject(), email.getEmailTo());
 				emailService.updateTries(email);
 			}
 		}

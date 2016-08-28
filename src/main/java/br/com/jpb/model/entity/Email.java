@@ -55,10 +55,8 @@ public class Email implements Serializable {
 
 	@Column(name = "EMAIL")
 	@NotEmpty(message = "Forneça um endereço de e-mail válido")
-	@Size(max = 255, message = "Forneça um endereço de e-mail com no máximo "
-			+ "{max} caracteres")
-	@Pattern(regexp = ValidationUtil.REGEXP_EMAIL, message = "Forneça um " +
-			"endereço de e-mail válido")
+	@Size(max = 255, message = "Forneça um endereço de e-mail com no máximo " + "{max} caracteres")
+	@Pattern(regexp = ValidationUtil.REGEXP_EMAIL, message = "Forneça um " + "endereço de e-mail válido")
 	public String getEmailTo() {
 		return emailTo;
 	}
@@ -69,8 +67,7 @@ public class Email implements Serializable {
 
 	@Column(name = "NAME")
 	@NotEmpty(message = "Forneça um nome válido")
-	@Size(max = 255, message = "Forneça um nome com no máximo {max} " +
-			"caracteres")
+	@Size(max = 255, message = "Forneça um nome com no máximo {max} " + "caracteres")
 	public String getNameTo() {
 		return nameTo;
 	}
@@ -81,8 +78,7 @@ public class Email implements Serializable {
 
 	@Column(name = "SUBJECT")
 	@NotEmpty(message = "Forneça um assunto válido")
-	@Size(max = 255, message = "Forneça um assunto com no máximo {max} " +
-			"caracteres")
+	@Size(max = 255, message = "Forneça um assunto com no máximo {max} " + "caracteres")
 	public String getSubject() {
 		return subject;
 	}
@@ -93,8 +89,7 @@ public class Email implements Serializable {
 
 	@Column(name = "BODY")
 	@NotEmpty(message = "Forneça uma mensagem válida")
-	@Size(max = 10000, message = "Forneça uma mensagem com no máximo {max} " +
-			"caracteres")
+	@Size(max = 10000, message = "Forneça uma mensagem com no máximo {max} " + "caracteres")
 	public String getBody() {
 		return body;
 	}
@@ -166,7 +161,6 @@ public class Email implements Serializable {
 
 	@Override
 	public String toString() {
-		return ToStringBuilder.reflectionToString(this, ToStringStyle
-				.MULTI_LINE_STYLE);
+		return ToStringBuilder.reflectionToString(this, ToStringStyle.MULTI_LINE_STYLE);
 	}
 }

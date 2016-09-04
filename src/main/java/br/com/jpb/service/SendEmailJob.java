@@ -34,7 +34,7 @@ public class SendEmailJob {
 			try {
 				emailService.send(email);
 			} catch (Exception e) {
-				LOGGER.warn("Erro no job para envio de emails. Assunto do email: {}. " + "Destinatário:" + " {}",
+				LOGGER.warn("Erro no job para envio de emails. Assunto do email: {}. Destinatário: {}",
 						email.getSubject(), email.getEmailTo());
 				emailService.updateTries(email);
 			}

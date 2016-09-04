@@ -1,9 +1,11 @@
 package br.com.jpb.service;
 
-import br.com.jpb.dao.GenericDao;
 import br.com.jpb.model.entity.Email;
+import br.com.jpb.model.entity.QEmail;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Sets;
+import com.querydsl.core.BooleanBuilder;
+import com.querydsl.jpa.impl.JPAQuery;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -27,7 +29,7 @@ import java.util.List;
 
 @Named
 @Singleton
-public class EmailService {
+public class EmailService extends GenericService<Email> {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(EmailService.class);
 
@@ -45,26 +47,26 @@ public class EmailService {
 	@Inject
 	private transient JavaMailSenderImpl mailSender;
 
-	@Inject
-	private transient GenericDao genericDao;
-
 	@Transactional
 	public void saveEmailAndSend(Email email) {
-		genericDao.persist(email);
+		persist(email);
 	}
 
 	public List<Email> findEmailsToSend() {
-		final StringBuilder query = new StringBuilder();
-		query.append("select e from Email e ");
-		query.append("where e.sent = false and e.tries < :max");
-		return genericDao.getEm().createQuery(query.toString(), Email.class).setParameter("max", MAX_TRIES)
-				.getResultList();
+		QEmail email = QEmail.email;
+		JPAQuery<Email> query = createJPAQuery().from(email);
+
+		BooleanBuilder booleanBuilder = new BooleanBuilder();
+		booleanBuilder.and(email.sent.eq(false));
+		booleanBuilder.and(email.tries.lt(MAX_TRIES));
+
+		return query.where(booleanBuilder).fetch();
 	}
 
 	@Transactional
 	public void updateTries(Email email) {
 		email.addTry();
-		genericDao.merge(email);
+		save(email);
 	}
 
 	@Transactional
@@ -94,7 +96,7 @@ public class EmailService {
 	private void markSent(Email email) {
 		email.setSentDateTime(new Date());
 		email.setSent(true);
-		genericDao.merge(email);
+		save(email);
 	}
 
 	private boolean isAllowed(String emailTo) {

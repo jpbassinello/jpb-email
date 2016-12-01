@@ -29,23 +29,23 @@ public class Email implements BaseEntity {
 
 	@Column(name = "EMAIL")
 	@NotEmpty(message = "Forneça um endereço de e-mail válido")
-	@Size(max = 255, message = "Forneça um endereço de e-mail com no máximo " + "{max} caracteres")
-	@Pattern(regexp = ValidationUtil.REGEXP_EMAIL, message = "Forneça um " + "endereço de e-mail válido")
+	@Size(max = 255, message = "Forneça um endereço de e-mail com no máximo {max} caracteres")
+	@Pattern(regexp = ValidationUtil.REGEXP_EMAIL, message = "Forneça um endereço de e-mail válido")
 	private String emailTo;
 
 	@Column(name = "NAME")
 	@NotEmpty(message = "Forneça um nome válido")
-	@Size(max = 255, message = "Forneça um nome com no máximo {max} " + "caracteres")
+	@Size(max = 255, message = "Forneça um nome com no máximo {max} caracteres")
 	private String nameTo;
 
 	@Column(name = "SUBJECT")
 	@NotEmpty(message = "Forneça um assunto válido")
-	@Size(max = 255, message = "Forneça um assunto com no máximo {max} " + "caracteres")
+	@Size(max = 255, message = "Forneça um assunto com no máximo {max} caracteres")
 	private String subject;
 
 	@Column(name = "BODY")
 	@NotEmpty(message = "Forneça uma mensagem válida")
-	@Size(max = 10000, message = "Forneça uma mensagem com no máximo {max} " + "caracteres")
+	@Size(max = 1_000_000, message = "Forneça uma mensagem com no máximo {max} caracteres")
 	private String body;
 
 	@Temporal(TemporalType.TIMESTAMP)
@@ -66,7 +66,9 @@ public class Email implements BaseEntity {
 	private int tries = 0;
 
 	public Email() {
-		this.createdDateTime = DateTimeUtil.nowWithDateTimeInUTC().toDate();
+		this.createdDateTime = DateTimeUtil
+				.nowWithDateTimeInUTC()
+				.toDate();
 		this.tries = 0;
 		this.sent = false;
 	}

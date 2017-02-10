@@ -16,7 +16,7 @@ import javax.validation.constraints.Size;
 import java.util.Date;
 
 @Entity
-@Table(name = "EMAIL")
+@Table(name = "email")
 @Getter
 @EqualsAndHashCode(of = "id")
 @ToString

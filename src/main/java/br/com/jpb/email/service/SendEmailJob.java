@@ -17,7 +17,7 @@ public class SendEmailJob {
 	private String appSendEmail;
 
 	@Autowired
-	private transient EmailService emailService;
+	private EmailService emailService;
 
 	@Scheduled(fixedDelay = 30_000)
 	public void sendEmails() {
@@ -28,7 +28,7 @@ public class SendEmailJob {
 			try {
 				emailService.send(email);
 			} catch (Exception e) {
-				log.warn("Erro no job para envio de emails. Assunto do email: {}. Destinatário: {}",
+				log.warn("Error in SendEmailJob. Email Subject: {}. Email To: {}",
 						email.getSubject(), email.getEmailTo(), e);
 				emailService.updateTries(email);
 			}

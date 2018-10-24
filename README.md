@@ -1,2 +1,2 @@
 # jpb-email
-Send email from any java application
+Sending email from my projects

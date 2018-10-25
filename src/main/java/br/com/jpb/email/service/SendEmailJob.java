@@ -13,7 +13,7 @@ import java.util.List;
 @Slf4j
 public class SendEmailJob {
 
-	@Value("${app.sendEmail}")
+	@Value("${email.app.sendEmail}")
 	private String appSendEmail;
 
 	@Autowired

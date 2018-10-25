@@ -29,13 +29,13 @@ public class EmailService {
 
 	private static final int MAX_TRIES = 3;
 
-	@Value("${email.from}")
+	@Value("${email.default.from}")
 	private String emailFrom;
 
-	@Value("${name.from}")
+	@Value("${email.default.name}")
 	private String nameFrom;
 
-	@Value("${allowed.emails}")
+	@Value("${email.app.allowed.emails}")
 	private String allowedEmails;
 
 	@Autowired

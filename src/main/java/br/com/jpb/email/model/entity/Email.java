@@ -1,6 +1,5 @@
 package br.com.jpb.email.model.entity;
 
-import br.com.jpb.util.ValidationUtil;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -34,7 +33,8 @@ public class Email implements Serializable {
 	@Column(name = "email")
 	@NotEmpty
 	@Size(max = 255)
-	@Pattern(regexp = ValidationUtil.REGEXP_EMAIL)
+	@Pattern(regexp = "[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@" +
+			"(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?")
 	private String emailTo;
 
 	@Column(name = "name")
@@ -62,10 +62,10 @@ public class Email implements Serializable {
 
 	@Column
 	@Setter
-	private boolean sent = false;
+	private boolean sent;
 
 	@Column
-	private int tries = 0;
+	private int tries;
 
 	public Email() {
 		this.createdDateTime = LocalDateTime.now();

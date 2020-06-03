@@ -1,42 +1,39 @@
 package br.com.jpb.email.service;
 
+import br.com.jpb.email.exception.EmailProviderException;
 import br.com.jpb.email.model.entity.Email;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
-import java.util.List;
-
-@Component
+@Service
 @Slf4j
+@RequiredArgsConstructor
+@ConditionalOnProperty("jpb.email.active")
 public class SendEmailJob {
 
-	@Value("${email.app.sendEmail}")
-	private String appSendEmail;
+	private final EmailService emailService;
 
-	@Autowired
-	private EmailService emailService;
-
-	@Scheduled(fixedDelay = 30_000)
+	@Scheduled(fixedDelay = 30_000, initialDelay = 5_000)
 	public void sendEmails() {
-		if (!isAppSendEmail()) {
-			return;
-		}
 		for (Email email : emailService.findEmailsToSend()) {
 			try {
 				emailService.send(email);
 			} catch (Exception e) {
-				log.warn("Error in SendEmailJob. Email Subject: {}. Email To: {}",
-						email.getSubject(), email.getEmailTo(), e);
+				if (e instanceof EmailProviderException) {
+					EmailProviderException epe = (EmailProviderException) e;
+					log.warn(
+							"Provider error SendEmailJob. Email Subject: {}. Email To: {}. Status Code: {}. Message: {}",
+							email.getSubject(), email.getEmailTo(), epe.getStatusCode(), epe.getMessage(), e);
+				} else {
+					log.warn("Error in SendEmailJob. Email Subject: {}. Email To: {}",
+							email.getSubject(), email.getEmailTo(), e);
+				}
 				emailService.updateTries(email);
 			}
 		}
-	}
-
-	private boolean isAppSendEmail() {
-		return "true".equals(appSendEmail);
 	}
 
 }
